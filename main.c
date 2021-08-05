@@ -4,15 +4,11 @@
 #include <string.h>
 
 uint64_t bytesToSectors(uint64_t bytes) {
-    uint64_t sectors = 0;
-
     if (bytes % 512) {
-        sectors = bytes / 512 + 1;
+        return bytes / 512 + 1;
     } else {
-        sectors = bytes / 512;
+        return bytes / 512;
     }
-
-    return sectors;
 }
 
 //gets file length in bytes
