@@ -49,8 +49,8 @@ void rootHeader(FILE* fs, uint64_t lba, uint64_t fileNum, uint64_t* fileLengths)
     int8_t* name = "/";
 
     fwrite(&sectors, sizeof(sectors), 1, fs);
-    fwrite(&folderNum, sizeof(folderNum), 1, fs);
     fwrite(&fileNum, sizeof(fileNum), 1, fs);
+    fwrite(&folderNum, sizeof(folderNum), 1, fs);
     fwrite(name, sizeof(name[0]), strlen(name) + 1, fs);
 
     uint64_t offset = lba + 1;
