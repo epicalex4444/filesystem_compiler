@@ -65,9 +65,11 @@ void addFile(FILE* fs, uint64_t bytes, int8_t* hostName, int8_t* guestName) {
     sectorAlign(fs);
 
     FILE* file = fopen(hostName, "r");
-    int8_t c;
+    int32_t next;
+    uint8_t c;
 
-    while ((c = fgetc(file)) != EOF) {
+    while ((next = fgetc(file)) != EOF) {
+        c = (uint8_t)next;
         fwrite(&c, sizeof(c), 1, fs);
     }
 
