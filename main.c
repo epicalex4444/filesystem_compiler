@@ -6,19 +6,13 @@
 uint64_t bytesToSectors(uint64_t bytes) {
     if (bytes % 512) {
         return bytes / 512 + 1;
-    } else {
-        return bytes / 512;
     }
+    return bytes / 512;
 }
 
 //gets file length in bytes
 uint64_t file_length(int8_t* fileName) {
     FILE* file = fopen(fileName, "r");
-
-    if (file == NULL) {
-        fclose(file);
-        return 0;
-    }
 
     fseek(file, 0L, SEEK_END);
     uint64_t bytes = ftell(file);
@@ -89,7 +83,7 @@ _Bool createFs(uint64_t fileNum, uint64_t lba, int8_t* outName, int8_t** hostNam
         lengths = (uint64_t*)realloc(lengths, sizeof(uint64_t*) * (i + 1));
         if (!(lengths[i] = file_length(hostNames[i]))) {
             free(lengths);
-            fprintf(stderr, "invalid file provided\n");
+            fprintf(stderr, "empty file provided\n");
             return 1;
         }
     }
@@ -118,7 +112,6 @@ int main(int argc, char** argv) {
     int8_t* outName = argv[2];
     int8_t** hostNames = malloc(sizeof(int8_t**) * fileNum);
     int8_t** guestNames = malloc(sizeof(int8_t**) * fileNum);
-
 
     for (uint64_t i = 0; i < fileNum; ++i) {
         hostNames[i] = strtok(argv[i + 3], ",");
