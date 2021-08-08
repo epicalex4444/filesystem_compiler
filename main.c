@@ -37,9 +37,9 @@ void sectorAlign(FILE* fs) {
 }
 
 //writes the root folder header
-void rootHeader(FILE* fs, uint64_t lba, uint64_t fileNum, uint64_t* fileLengths) {
-    uint64_t folderNum = 0;
-    uint64_t sectors = bytesToSectors(26 + fileNum * 8 + folderNum * 8);
+void rootHeader(FILE* fs, uint64_t lba, uint32_t fileNum, uint64_t* fileLengths) {
+    uint32_t folderNum = 0;
+    uint32_t sectors = bytesToSectors(26 + fileNum * 8 + folderNum * 8);
     int8_t* name = "/";
 
     fwrite(&sectors, sizeof(sectors), 1, fs);
@@ -78,10 +78,10 @@ void addFile(FILE* fs, uint64_t bytes, int8_t* hostName, int8_t* guestName) {
 }
 
 //creates the filesystem as a binary file
-_Bool createFs(uint64_t fileNum, uint64_t lba, int8_t* outName, int8_t** hostNames, int8_t** guestNames) {
+_Bool createFs(uint32_t fileNum, uint64_t lba, int8_t* outName, int8_t** hostNames, int8_t** guestNames) {
     uint64_t* lengths = malloc(sizeof(uint64_t*));
 
-    for (uint64_t i = 0; i < fileNum; ++i) {
+    for (uint32_t i = 0; i < fileNum; ++i) {
         lengths = (uint64_t*)realloc(lengths, sizeof(uint64_t*) * (i + 1));
         if (!(lengths[i] = file_length(hostNames[i]))) {
             free(lengths);
@@ -93,7 +93,7 @@ _Bool createFs(uint64_t fileNum, uint64_t lba, int8_t* outName, int8_t** hostNam
     FILE* fs = fopen(outName, "wb");
     rootHeader(fs, lba, fileNum, lengths);
 
-    for (uint64_t i = 0; i < fileNum; ++i) {
+    for (uint32_t i = 0; i < fileNum; ++i) {
         addFile(fs, lengths[i], hostNames[i], guestNames[i]);
     }
 
@@ -109,18 +109,16 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    uint64_t fileNum = argc - 3;
+    uint32_t fileNum = argc - 3;
     uint64_t lba = atoi(argv[1]);
     int8_t* outName = argv[2];
     int8_t** hostNames = malloc(sizeof(int8_t**) * fileNum);
     int8_t** guestNames = malloc(sizeof(int8_t**) * fileNum);
 
-    for (uint64_t i = 0; i < fileNum; ++i) {
+    for (uint32_t i = 0; i < fileNum; ++i) {
         hostNames[i] = strtok(argv[i + 3], ",");
         guestNames[i] = strtok(NULL, ",");
-    }
 
-    for (uint64_t i = 0; i < argc - 3; ++i) {
         FILE* fp = fopen(hostNames[i], "r");
         if (fp == NULL) {
             fprintf(stderr, "invalid host file name\n");
